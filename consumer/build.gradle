@@ -1,0 +1,36 @@
+plugins {
+	// Stopped from moving to 3.2.x due to wiremock issue
+	// https://github.com/wiremock/wiremock/issues/2395
+	id 'org.springframework.boot' version '3.1.8'
+	id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'au.com.dius.pactworkshop'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	testImplementation 'com.github.tomakehurst:wiremock:3.0.1'
+	testImplementation 'au.com.dius.pact.consumer:junit5:4.6.5'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+bootRun{
+	standardInput = System.in
+}
+
+task copyPacts(type: Copy) {
+	description 'Copies the generated Pact json file to the provider resources directory'
+
+	from('build/pacts/')
+	into('../provider/src/test/resources/pacts/')
+}
